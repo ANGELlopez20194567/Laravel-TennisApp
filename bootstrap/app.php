@@ -16,7 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'adminAuth' => \App\Http\Middleware\AdminAuth::class,
             'superAdminAuth' => \App\Http\Middleware\SuperAdminAuth::class,
             'admin'=>\App\Http\Middleware\admin::class,
-            'vendedor'=>\App\Http\Middleware\vendedor::class
+            'vendedor'=>\App\Http\Middleware\vendedor::class,
+            'PreventBakcHistory'=>\App\Http\Middleware\PreventBackHistory::class,
             ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

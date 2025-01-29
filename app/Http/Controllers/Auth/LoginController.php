@@ -41,30 +41,38 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    protected function login(Request $request){
-        
-        $credentials=$request->validate([
-            'email'=>'required|email',
-            'password'=>'required',
+protected function login(Request $request){
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        ]);
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate(); // Regenerate session to prevent session fixation attacks
 
-        if(Auth::attempt($credentials)){
-            $user_role=Auth::user()->role;
+        $user_role = Auth::user()->role;
 
-            switch($user_role){
-                case 1:
-                    return redirect('/admin');
-                    break;
-                case 2:
-                    return redirect('/vendedor');
-                    break;
-                default:
-                    Auth::logout();
-                    return redirect('/login')->with('error','oooops algo falló');
-            }
-        }else{
-            return redirect('/login');
+        switch ($user_role) {
+            case 1:
+                return redirect('/admin');
+            case 2:
+                return redirect('/vendedor');
+            default:
+                Auth::logout();
+                return redirect('/login')->with('error', 'Oooops, algo falló');
         }
+    } else {
+        return redirect('/login')->with('error', 'Credenciales incorrectas');
     }
+}
+
+
+    public function logout(Request $request)
+{
+    Auth::logout();
+    $request->session()->invalidate(); // Invalidate session
+    $request->session()->regenerateToken(); // Regenerate CSRF token
+
+    return redirect('/login'); // Redirect to login page
+}
 }
